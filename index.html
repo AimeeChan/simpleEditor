@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+	
+	<title></title>
+	<style type="text/css">
+		body{
+			font-size: 1em;
+		}
+		.bold, .underline{
+				font-weight: bold;
+			}
+		.underline{
+			text-decoration: underline;
+		}
+		.strikeThrough{
+			text-decoration: line-through;
+		}
+		.italic{
+			font-style: italic;
+		}
+		.backgroundColor{
+			background-color: yellow;
+		}
+		.format-para{
+			font-size: 1em;
+		}
+		.format-h1{
+			font-size: 2.5em;
+		}
+		.format-h2{
+			font-size: 2em;
+		}
+		.format-h3{
+			font-size: 1.5em;
+		}
+		.format-h2,.format-h3, .format-h1{
+			font-weight: bold;
+		}
+		ul li{
+			list-style: none;
+		}
+		.title-tip{
+			height: 20px;
+			text-decoration: none;
+		}
+		.size-tip{
+			width: 20px;
+		}
+		a{
+			text-decoration: none;
+			border: 1px solid #5CADAD;
+			border-radius: 5px;
+			padding: 5px;
+			background: -webkit-linear-gradient(top, #D1E9E9, #95CACA);
+			background: -moz-linear-gradient(top, #D1E9E9, #95CACA);
+			background: -linear-gradient(top, #D1E9E9, #95CACA);
+		}
+		a:hover{
+			
+			-webkit-box-shadow: 1px 1px #B3D9D9;
+			-moz-box-shadow: 1px 1px #B3D9D9;
+			box-shadow: 1px 1px #B3D9D9;
+		}
+		.underline{
+			text-decoration: underline;
+		}
+		ul{
+			padding-left: 0;
+		}
+		ul li{
+			padding-left: 5px;
+		}
+		.first-li-head ul li, .first-li-size ul li, .fore-color li{
+			background: -webkit-linear-gradient(top, #D1E9E9, #95CACA);
+			background: -moz-linear-gradient(top, #D1E9E9, #95CACA);
+			background: -linear-gradient(top, #D1E9E9, #95CACA);
+		}
+		textarea{
+			display: none;
+		}
+		.second-ul .second-li{
+			display: inline;
+			margin-left: 10%;
+
+		}
+		.bold, .underline, .italic{
+			padding-left: 10px;
+			padding-right: 10px;
+		}
+		.size1{
+			font-size:2em;
+		}
+		.size2{
+			font-size: 1.5em;
+		}
+		.size3{
+			font-size: 1em;
+		}
+		.size4{
+			font-size: 13px;
+		}
+		.size5{
+			font-size: 12px;
+		}
+		.first-li, .third-li{
+			vertical-align: top;
+			display: inline-block;
+		}
+		.first-li ul, .third-li ul{
+			border: 1px solid #5CADAD;
+			border-radius: 5px;
+		}
+		.third-li{
+			display: inline-block;
+		}
+		.headSize, .selectSize, .third-li ul{
+			position: absolute;
+			z-index: 100;
+			background-color: #eee;
+		}
+		.headSize, .selectSize{
+		}
+		ul.fore-color{
+			background-color: #3D7878;
+		}
+		.back-color{
+			color:#3D7878;
+		}
+		.first-ul,.second-ul, .third-ul{
+			padding-top: 5px;
+		}
+		.selectedBtn{
+			background: -webkit-linear-gradient(top, #BEBEBE, #6C6C6C);
+			background: -moz-linear-gradient(top, #D1E9E9, #95CACA);
+			background: -linear-gradient(top, #D1E9E9, #95CACA);
+			box-shadow: 1px 1px #BEBEBE;
+			border: 1px solid #BEBEBE;
+		}
+	</style>
+	<script type="text/javascript" src="zepto.min.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			//===========create iframe
+			var deviceW = document.body.clientWidth - 20;
+			var deviceH = window.innerHeight*0.7;
+			var textarea = document.createElement('textarea');
+
+			var iframe = document.createElement('iframe');
+			iframe.id = 'editor';
+			iframe.frameBorder = 0;
+			$(iframe).css({"width":deviceW,"height":deviceH,"border":"1px solid #EEE"});
+			iframe.appendChild(textarea);
+			$('.edit').prepend(iframe);
+			var iframeDoc = iframe.contentWindow.document;
+			iframeDoc.designMode = "on";
+			iframeDoc.open();
+			iframeDoc.write('<html><head><style type="text/css">body{font-size:1em;}</style></head><body></body></html>');
+			iframeDoc.close();
+
+
+			//==========something initial
+			var thisValue;
+			var liHeight = $('.format-h2').height();
+			var lis = $('.first-li ul li, .third-li ul li');
+			for(var i = 0, l = lis.length; i < l; i++){
+				var li = $(lis[i]);
+				li.height(liHeight);
+			}
+			$(".first-li-head").css("width",$(".format-h1").css("width"));
+			$(".first-li-size ul").width($(".size1").width());
+			var thisLeft2 = $('.first-li-size ').offset().left +$('.first-li-size').width();
+			$(".selectSize").offset({"left":thisLeft2});
+			setAText(".title-tip",".selectedLi");
+			setAText(".size-tip",".selectedLi");
+			$('a').not('a.fontColor').css("color","#000");
+			$('a').not('a.fontColor').mousedown(function() {
+				this.style.color = "#000";
+			}).mouseup(function() {
+				this.style.color = "#000";
+			});
+			setAText(".fore-tip",".colorLi");
+			setAText(".back-tip",".colorLi");
+			var maxWidth = 60;
+			$(".third-li ul").width(maxWidth);
+			var thisLeftFore = $($('.third-li span')[0]).width();
+			var spanWidth = 90;
+			var thisLeftBack = spanWidth + $(".third-li span")[1].offsetLeft;
+			$(".fore-color").offset({"left":thisLeftFore});
+			$(".back-color").offset({"left":thisLeftBack});
+			$('.second-li a').width($('.strikeThrough').width());
+
+
+			var foreColors = $('.fore-color li');
+			for(var i = 0, l = foreColors.length; i < l; i++){
+				var thisColor = foreColors[i];
+				$(thisColor).css("color",  $(thisColor).attr("value"));
+				
+			};
+			$('.fore-color li').click(function(){
+					$(".fore-color li").removeClass('colorLi');
+					$(this).addClass('colorLi');
+					setAText(".fore-tip",".colorLi");
+					thisValue = getThisValue("li.colorLi",0);
+					$(".fore-color").toggle();
+					iframeDoc.execCommand("forecolor", false, thisValue);
+			});
+
+
+			var backColors = $('.back-color li');
+			for(var i = 0, l = backColors.length; i < l; i++){
+				var thisColor = backColors[i];
+				$(thisColor).css("background-color", $(thisColor).attr("value"));
+			};
+			$('.back-color li').click(function(){
+					$(".back-color li").removeClass('colorLi');
+					$(this).addClass('colorLi');
+					setAText(".back-tip",".colorLi");
+					thisValue = getThisValue("li.colorLi",1);
+					$(".back-color").toggle();
+					iframeDoc.execCommand("backcolor", false, thisValue);
+			});
+			$(".headSize,.selectSize, .third-li ul").hide();
+
+
+
+			//=============choose parts
+			//***make
+			
+			$(".first-li a, .third-li a").click(function() {
+				$(".first-li a, .third-li a").next('ul').hide();
+				$(this).next('ul').toggle();
+				//$(".fore-color, .back-color").hide();
+			});
+			/*$(".first-li ul,.third-li ul").bind("mouseleave",function(event){
+				$(this).hide();
+			});*/
+			$(".headSize li").click(function() {
+				$("ul.headSize li").removeClass('selectedLi');
+				$(this).addClass('selectedLi');
+				setAText(".title-tip",".selectedLi");
+				thisValue = getThisValue('li.selectedLi', 0);
+				$(".headSize").toggle();
+				iframeDoc.execCommand('formatblock', false, thisValue);
+			});
+			$(".selectSize li").click(function() {
+				$(".selectSize li").removeClass('selectedLi');
+				$(this).addClass('selectedLi');
+				setAText(".size-tip",".selectedLi");
+				thisValue = getThisValue('li.selectedLi', 1);
+				$(".selectSize").toggle();
+				iframeDoc.execCommand('fontsize', false, thisValue);
+			});
+			$(".second-li a").click(function() {
+				var command = this.className;
+				iframeDoc.execCommand(command);
+				if(this.classList.contains('selectedBtn')){
+						$(this).removeClass('selectedBtn');
+					} else{
+						$(this).addClass('selectedBtn');
+					}
+				$(".first-li a, .third-li a").next('ul').hide();
+			});
+			$(iframeDoc).click(function() {
+				$(".first-li a, .third-li a").next('ul').hide();
+			});
+		});
+		function getThisValue(className, index){
+			return $($(className)[index]).attr("value");
+		};
+		function setAText(className, childClass){
+			var bro = $(className).next();
+			var text = $(bro).children(childClass).html();
+			$(className).html(text);
+		}
+	</script>
+</head>
+<body>
+	<hr/>
+	<div id="tool-bar">
+
+	<ul class="first-ul">
+		<li class="first-li first-li-head">
+		<span>title: </span>
+			<a href="#" class="title-tip"></a>
+			<ul class="headSize">
+				<li class="format-para selectedLi" value="p">Paragraph</li>
+				<li class="format-h1" value="h1">Heading1</li>
+				<li class="format-h2" value="h2">Heading2</li>
+				<li class="format-h3" value="h3">Heading3</li>
+			</ul>
+		</li>
+		<li class="first-li first-li-size">
+		<span>fontSize:</span>
+			<a href="#" class="size-tip"></a>
+			<ul class="selectSize">
+				<li class="size1" value="6">Huge</li>
+				<li class="size2" value="5">large</li>
+				<li class="size3 selectedLi" value="3">normal</li>
+				<li class="size4" value="2">smaller</li>
+				<li class="size5" value="1">smallest</li>
+			</ul>
+		</li>
+	</ul>
+	<ul class="second-ul">
+		<li class="second-li">
+		<a href="#" class="bold">B</a>
+		</li>
+		<li class="second-li"><a href="#" class="underline">U</a>
+		</li>
+		<li class="second-li"><a href="#" class="italic">I</a>
+		</li>
+		<li class="second-li"><a href="#" class="strikeThrough">abc</a>
+		</li>
+	</ul>
+	<ul class="third-ul">
+		<li class="third-li">
+		<span>foreColor: </span>
+		<a href="#" class="fore-tip"></a>
+			<ul class="fore-color" title="forecolor">
+			<li value="#000000" title="black" class="colorLi">black</li>
+			<li value="#EEEEEE" title="gray">gray</li>
+			<li value="#FF0000" title="red">red</li>
+			<li value="#0000FF" title="blue">blue</li>
+			<li value="#FFFF00" title="yellow">yellow</li>
+			<li value="#00FF00" title="green">green</li>
+			<li value="#C0C0C0" title="sliver">sliver</li>
+			<li value="#FFFFFF" title="white">white</li>
+			</ul>
+		</li>
+		<li class="third-li">
+		<span>backColor: </span>
+		<a href="#" class="back-tip"></a>
+			<ul class="back-color" title="backcolor">
+			<li value="#000000" title="black">black</li>
+			<li value="#EEEEEE" title="gray">gray</li>
+			<li value="#FF0000" title="red">red</li>
+			<li value="#0000FF" title="blue">blue</li>
+			<li value="#FFFF00" title="yellow">yellow</li>
+			<li value="#00FF00" title="green">green</li>
+			<li value="#C0C0C0" title="sliver">sliver</li>
+			<li value="#FFFFFF" title="white"  class="colorLi">white</li>
+			</ul>
+		</li>
+	</ul>
+	</div>
+			
+	
+	<form class="edit">
+		<input type="submit" value="submit">
+	</form>
+
+</body>
+</html>
